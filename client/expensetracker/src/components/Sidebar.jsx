@@ -8,6 +8,7 @@ import {
   HelpCircle,
   Home,
   LogOut,
+  Menu,
   User,
   X,
 } from "lucide-react";
