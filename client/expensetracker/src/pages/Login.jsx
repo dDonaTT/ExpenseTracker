@@ -199,6 +199,12 @@ const Login = ({ onLogin, API_URL = "http://localhost:8000/api" }) => {
               }
             </button>
           </form>
+          <div className={loginStyles.signUpContainer}>
+            <p className={loginStyles.signUpText}>
+              Dont have an account?{" "}
+              <Link to="/signup" className={loginStyles.signUpLink}>Create an account </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>
