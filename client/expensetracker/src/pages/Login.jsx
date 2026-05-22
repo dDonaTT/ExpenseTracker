@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { loginStyles } from "../assets/dummyStyles";
 import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 const Login = ({ onLogin, API_URL = "http://localhost:8000/api" }) => {
   const [email, setEmail] = useState("");

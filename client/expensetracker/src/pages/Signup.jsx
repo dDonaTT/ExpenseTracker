@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { signupStyles } from "../assets/dummyStyles";
 import axios from "axios";
 import { ArrowLeft, Eye, EyeOff, Lock, Mail, User } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 const Signup = ({ API_URL = "http://localhost:8000/api", onSignup }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -59,7 +60,7 @@ const Signup = ({ API_URL = "http://localhost:8000/api", onSignup }) => {
     if (!validateForm()) return;
     setIsLoading(true);
     try {
-      const res = await axios.get(
+      const res = await axios.post(
         `${API_URL}/user/register`,
         { name, email, password },
         { headers: { "Content-Type": "application/json" } },
@@ -68,7 +69,6 @@ const Signup = ({ API_URL = "http://localhost:8000/api", onSignup }) => {
       const token = data.token ?? null;
       let profile = data.user ?? null;
       if (!profile) {
-        // check for any extra fields returned that could be user info
         const copy = { ...data };
         delete copy.token;
         delete copy.user;
@@ -148,7 +148,9 @@ const Signup = ({ API_URL = "http://localhost:8000/api", onSignup }) => {
                   placeholder="Full Name"
                 />
               </div>
-              {errors.name && <p className={signupStyles.fieldError}>{errors.name}</p>}
+              {errors.name && (
+                <p className={signupStyles.fieldError}>{errors.name}</p>
+              )}
             </div>
             <div className="mb-6">
               <label htmlFor="email" className={signupStyles.label}>
@@ -167,7 +169,9 @@ const Signup = ({ API_URL = "http://localhost:8000/api", onSignup }) => {
                   placeholder="Email Address"
                 />
               </div>
-              {errors.email && <p className={signupStyles.fieldError}>{errors.email}</p>}
+              {errors.email && (
+                <p className={signupStyles.fieldError}>{errors.email}</p>
+              )}
             </div>
             <div className="mb-6">
               <label htmlFor="password" className={signupStyles.label}>
@@ -185,28 +189,76 @@ const Signup = ({ API_URL = "http://localhost:8000/api", onSignup }) => {
                   className={`${signupStyles.passwordInput} ${errors.password ? "border-red-300" : "border-gray-300"}`}
                   placeholder="********"
                 />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className={signupStyles.passwordToggle}>
-                    {showPassword ? (
-                        <EyeOff className="w-5 h-5"/>
-
-                    ):(
-                        <Eye className="w-5 h-5"/>
-                    )}
-
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className={signupStyles.passwordToggle}
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
                 </button>
               </div>
-              {errors.password && <p className={signupStyles.fieldError}>{errors.password}</p>}
+              {errors.password && (
+                <p className={signupStyles.fieldError}>{errors.password}</p>
+              )}
             </div>
             <div className={signupStyles.checkboxContainer}>
-                <input type="checkbox" checked={rememberMe} id="remember" onChange={(e)=>setRememberMe(e.target.checked)} className={signupStyles.checkbox} />
-                <label htmlFor="remember" className={signupStyles.checkboxLabel}>
-                    Remember Me
-                </label>
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                id="remember"
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className={signupStyles.checkbox}
+              />
+              <label htmlFor="remember" className={signupStyles.checkboxLabel}>
+                Remember Me
+              </label>
             </div>
-            <button type="submit" className={`${signupStyles.button}`>
-               ${isLoading ? signupStyles.buttonDisabled : ""}
+            <button
+              type="submit"
+              className={`${signupStyles.button} ${isLoading ? signupStyles.buttonDisabled : ""}`}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <svg
+                    className={signupStyles.spinner}
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2-647z"
+                    ></path>
+                  </svg>
+                  Creating account...
+                </>
+              ) : (
+                "Create Account"
+              )}
             </button>
           </form>
+          <div className={signupStyles.signInContainer}>
+            <p className={signupStyles.signInText}>
+              Already have an Account?{" "}
+              <Link to="/login" className={signupStyles.signInLink}>
+                Sign In
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>
