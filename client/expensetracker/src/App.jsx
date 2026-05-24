@@ -74,6 +74,16 @@ function App() {
     clearAuth();
     navigate("/login");
   };
+  const addTransactions = (newTransaction) =>
+    setTransactions((p) => [newTransaction, ...p]);
+  const editTransaction = (id, updatedTransaction) =>
+    setTransactions((p) =>
+      p.map((t) => (t.id === id ? { ...updatedTransaction, id } : t)),
+    );
+  const deleteTransaction = (id) =>
+    setTransactions((p) => p.filter((t) => t.id !== id));
+  const refreshTransactions = () =>
+    setTransactions(getTransactionsFromStorage());
 
   const handleLogin = (userData, remember = false, tokenFromApi = null) => {
     persistAuth(userData, tokenFromApi, remember);
@@ -121,7 +131,7 @@ function App() {
                 Authorization: `Bearer ${storedToken}`,
               },
             });
-            const profile =  res.data;
+            const profile = res.data;
             persistAuth(profile, storedToken, tokenFromLocal);
           } catch (error) {
             console.log(error);
@@ -130,7 +140,7 @@ function App() {
         }
       } catch (error) {
         console.log(error);
-      }finally {
+      } finally {
         setIsLoading(false);
         try {
           setTransactions(getTransactionsFromStorage());
@@ -139,15 +149,38 @@ function App() {
         }
       }
     })();
-  },[]);
+  }, []);
   return (
     <>
+      <ScrollOnTop />
       <Routes>
         <Route path="/login" element={<Login onLogin={handleLogin} />} />
         <Route path="/signup" element={<Signup onLogin={handleSignup} />} />
 
-        <Route element={<Layout user={user} onLogout={handleLogout} />}>
-          <Route path="/" element={<Dashboard />} />
+        <Route
+          element={
+            <ProtectedRoutes user={user}>
+              <Layout
+                user={user}
+                onLogout={handleLogout}
+                transactions={transactions}
+                addTransactions={addTransactions}
+                editTransaction={editTransaction}
+                deleteTransaction={deleteTransaction}
+                refreshTransactions={refreshTransactions}
+              />
+            </ProtectedRoutes>
+          }
+        >
+          <Route
+            path="/"
+            element={<Dashboard />}
+            transactions={transactions}
+            addTransactions={addTransactions}
+            editTransaction={editTransaction}
+            deleteTransaction={deleteTransaction}
+            refreshTransactions={refreshTransactions}
+          />
         </Route>
       </Routes>
     </>
